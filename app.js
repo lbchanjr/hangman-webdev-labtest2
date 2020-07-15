@@ -5,7 +5,7 @@
 // constants
 const DEFAULT_IMAGE = "001-face.png"
 // @NOTE: your game must work for any size array!
-const POSSIBLE_WORDS = ["TORONTO", "PARIS", "LONDON", "MISSISSIPPI"]; 
+//const POSSIBLE_WORDS = ["TORONTO", "PARIS", "LONDON", "MISSISSIPPI"]; 
 const MAX_CHANCES = 6
 
 // game variables
