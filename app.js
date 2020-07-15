@@ -39,19 +39,41 @@ const saveGame = function() {
   }
 }
 
+// const generateRandomWord = function() {
+//   randomWord = undefined;
+//   randomIndex = Math.floor(Math.random() * POSSIBLE_WORDS.length);
+//   console.log("Random index: " + randomIndex)
+//   randomWord = POSSIBLE_WORDS[randomIndex].toUpperCase();
+//   setupGuessWord(randomWord);
+//   document.querySelector("#debug-actual-word").innerText = `DEBUG: Selected word is: ${randomWord}`;
+//   console.log(`Random word: ${randomWord}`);
+// }
+
+const generateRandomWord = function() {
+  let endPoint = "https://random-word-api.herokuapp.com/word?number=1";
+  randomWord = undefined;
+  fetch(endPoint)
+  .then((response)=>{
+    return response.json();
+  })
+  .then((jsonData)=> {
+    randomWord = jsonData[0].toUpperCase();
+
+    setupGuessWord(randomWord);
+    // document.querySelector("#debug-actual-word").innerText = `DEBUG: Selected word is: ${randomWord}`;
+    console.log(`Random word: ${randomWord}`);
+  })
+  .catch((err)=>{
+    console.log(`Error: ${err}`);
+  });
+}
+
 const startGame = function() {
   alert("game start");
   console.log("game start");
 
   // Generate random word from array
-  randomIndex = Math.floor(Math.random() * POSSIBLE_WORDS.length);
-  console.log("Random index: " + randomIndex)
-  randomWord = POSSIBLE_WORDS[randomIndex].toUpperCase();
-
-  document.querySelector("#debug-actual-word").innerText = `DEBUG: Selected word is: ${randomWord}`;
-  console.log(`Random word: ${randomWord}`);
-
-  setupGuessWord(randomWord);
+  generateRandomWord();
 
   chancesLeft = MAX_CHANCES;
   gameOver = false;
