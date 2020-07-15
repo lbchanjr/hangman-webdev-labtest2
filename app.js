@@ -1,3 +1,61 @@
+const checkGameStatus = function() {
+  if (guessWord.indexOf("_") === -1) {
+    // No more '_' left in guess word, player has won.
+    gameOver = true;
+
+    // Update status to indicate that we have a winner
+    document.getElementById("results").innerText = `GAME OVER! YOU WIN!`
+    return;
+
+  } else if (chancesLeft === 0) {
+    // Game is over, player has lost
+    gameOver = true;
+
+    // Update status to indicate that we have a winner
+    document.getElementById("results").innerText = `GAME OVER! YOU LOSE!`
+    return;
+  }
+}
+
+const loadSavedGame = function() {
+  const savedData = JSON.parse(localStorage.getItem("hangmanGame"));
+
+  console.log(`Loaded game info is: ${savedData}`)
+
+  // reload saved game info
+  randomWord = savedData.selectedWord;
+  chancesLeft = parseInt(savedData.chancesRemaining);
+  guessWord = savedData.guessWord;
+
+
+  const keyPressedInfoArray = savedData.keyPress;
+
+  let elements = document.querySelectorAll(".letter");
+  for (let i = 0; i < keyPressedInfoArray.length; i++) {
+    if (keyPressedInfoArray[i] === true) {
+      elements[i].classList.add("already-selected");
+    }
+  }
+
+  // "Update chances left info"
+  document.querySelector("span.chancesLabel").innerText = chancesLeft;
+
+  const imageString = "img/00" + (MAX_CHANCES-chancesLeft + 1) + "-face.png";
+  // Update the hangman image.
+  document.getElementById("img-hangperson-status").src = imageString;
+  // Display letter placeholders for the word to guess
+  document.getElementById("word").innerText = guessWord;
+
+  // Update result message based on game status.
+  checkGameStatus();
+  if (gameOver === false) {
+    // Game is not yet over... Initialize result message
+    document.getElementById("results").innerText = `Continue game by selecting a letter from the keyboard.`; 
+  } 
+    
+
+}
+
 // ---------------------------
 // 1. Game setup
 // ---------------------------
@@ -24,6 +82,12 @@ document.querySelector("#debug-actual-word").innerText = "";
 document.getElementById("img-hangperson-status").src = "";
 document.querySelector("span.chancesLabel").innerText = MAX_CHANCES;
 
+if (localStorage.hasOwnProperty("hangmanGame") === true) {
+  if (confirm("Do you want to load a previously saved game?")) {
+    loadSavedGame();
+  } 
+}
+
 const saveGame = function() {
   
   console.log("Save Game button pressed");  
@@ -31,7 +95,20 @@ const saveGame = function() {
   // Check if game has been started.
   if (randomWord !== undefined) {
     // Game was started, save game info.
-    const saveGameInfo = {"selectedWord": randomWord, "chancesRemaining": chancesLeft}
+
+    // Save the keyboard status so that we may be able to reload 
+    // current keyboard state when game is loaded
+    let keyPressStatus = [];
+    let elements = document.querySelectorAll(".letter");
+    for (let i = 0; i < elements.length; i++) {
+      if (elements[i].classList.contains("already-selected")) {
+        keyPressStatus.push(true);
+      } else {
+        keyPressStatus.push(false);
+      }
+    }
+
+    const saveGameInfo = {"selectedWord": randomWord, "chancesRemaining": chancesLeft, "keyPress": keyPressStatus, "guessWord": guessWord};
     alert("SAVING THE GAME!");
     localStorage.setItem("hangmanGame", JSON.stringify(saveGameInfo));
   } else {
@@ -185,25 +262,6 @@ const replaceGuessWordCharAt = function(index, newChar) {
     return;
   } else {
     guessWord = guessWord.substr(0,index) + newChar + guessWord.substr(index+1);
-  }
-}
-
-const checkGameStatus = function() {
-  if (guessWord.indexOf("_") === -1) {
-    // No more '_' left in guess word, player has won.
-    gameOver = true;
-
-    // Update status to indicate that we have a winner
-    document.getElementById("results").innerText = `GAME OVER! YOU WIN!`
-    return;
-
-  } else if (chancesLeft === 0) {
-    // Game is over, player has lost
-    gameOver = true;
-
-    // Update status to indicate that we have a winner
-    document.getElementById("results").innerText = `GAME OVER! YOU LOSE!`
-    return;
   }
 }
 
